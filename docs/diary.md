@@ -1,0 +1,31 @@
+﻿### [2026-04-08 11:04:44]
+- **Trigger**: 按 CTO 审阅意见修订 docs/plan.md（单栈 Next、四表、Sliding Window、简化安全、Supabase Auth、应用层计费事务、单容器部署与 D1–D7 计划）。
+- **Execution**: docs/plan.md 全文重写：移除 FastAPI/摘要压缩/DB Trigger 余额；新增 Route Handlers + streamText、四表 schema、计费 SQL 修正为先 UPDATE 后 INSERT balance_after。
+- **Debt & Opt**: 实现时用 FOR UPDATE 或封装 RPC 处理 applyBillingDelta 与流式落库顺序；Cloudflare Proxy 策略按实际上线再开。
+
+### [2026-04-08 12:00:00] [Claude Code]
+- **Action**: D1-D2 交付 — 项目骨架 + 数据库 + 问卷建档
+  - 初始化 Next.js 16 App Router + Bun + Tailwind v4 (`web/`)
+  - 安装 @supabase/supabase-js + @supabase/ssr
+  - 创建 Supabase client 三件套 (client/server/admin) + proxy.ts (Next.js 16 的 middleware 替代)
+  - 全局暗色主题 CSS 变量 (plan.md §9.3) + ambient glow 径向渐变
+  - Auth 页面：邮箱+密码 登录/注册 + callback 路由
+  - UI 组件库：Button, Input, TextArea, ProgressBar, ChipSelect, StepShell
+  - 5 步问卷建档 (`/onboarding`)：14 题，useReducer 状态管理，最后一步统一提交
+  - Server Action：upsert user → insert persona → grant 100 free tokens → redirect /chat/[id]
+  - prompt-builder.ts：问卷答案拼接中文 system_prompt（含硬编码安全规则）
+  - 占位页面：/chat/[id], /billing, /api/chat
+  - 数据库 migration SQL：4 表 (users, personas, chat_logs, billing_tokens) + RLS + 索引
+  - 问卷文档：docs/questionnaire.md（14 题完整记录）
+- **Opinion/Decision**:
+  - Next.js 16 将 middleware.ts 更名为 proxy.ts（breaking change），已适配
+  - Tailwind v4 使用 CSS-based @theme 而非 tailwind.config.ts
+  - 问卷采用 client-side 步进渲染，数据不离开浏览器直到最终提交
+  - personas.questionnaire_data JSONB 存完整问卷原始数据，便于日后重建 prompt
+  - 计费使用应用层事务（先 UPDATE users.token_balance 再 INSERT billing_tokens）
+- **Handoff**:
+  - 用户需要到 Supabase SQL Editor 执行 docs/migration_001_initial.sql
+  - 用户需要创建 web/.env.local 并填入 Supabase anon key 和 service role key
+  - Supabase 项目需关闭邮箱确认（Settings > Auth > 关闭 Confirm email）以便 MVP 快速注册
+  - D3 待做：/chat/[id] 后端（DeepSeek 流式 + Vercel AI SDK + chat_logs 持久化）
+  - D4 待做：/chat/[id] 前端（暗色 UI + 气泡 + 金色呼吸灯 + 胶囊输入框）

@@ -1,0 +1,9 @@
+# GLOBAL DIRECTIVE
+You are participating in a multi-agent workflow. The source of truth for project state is `docs/diary.md`. 请你完全使用中文记录。
+
+Before starting any significant UI implementation or logic change, read `docs/diary.md` to align with the backend architecture laid out by Claude Code.
+
+Upon completing a feature or making a structural change, you MUST prompt the user to let you update `docs/diary.md`, or automatically append your work summary using this format:
+### [YYYY-MM-DD HH:MM:SS] [Cursor]
+- **Action**: [UI components created/modified]
+- **Conflict/Resolution**: [Any discrepancies found with backend APIs and how you handled them]
