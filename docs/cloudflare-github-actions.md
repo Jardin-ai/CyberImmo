@@ -27,13 +27,25 @@
 
 ## 二、Cloudflare 侧准备（一次性）
 
-### 1. 创建 API Token
+### 1. 创建 API Token（`wrangler deploy` 必备，错权限会报 `10000`）
 
-1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/) →右上角头像 → **My Profile** → **API Tokens**。
-2. **Create Token** → 可使用模板 **Edit Cloudflare Workers** 或自定义权限，至少包含：
-   - **Account** → **Cloudflare Pages** → **Edit**
-   - （若用 Workers 更多能力再补）
-3. 生成后 **只显示一次**，复制保存。
+OpenNext 走 **Cloudflare Workers** 部署，**不能只给 Pages**。请新建或更换 Token：
+
+1. 打开 [API Tokens](https://dash.cloudflare.com/profile/api-tokens) → **Create Token**。
+2. **推荐**：选模板 **「Edit Cloudflare Workers」**（已含 Workers脚本编辑等），再点 **Continue to summary** → Create。
+3. **若用「Create Custom Token」**，至少勾选（**Account** 资源需选 **含本项目的账号**）：
+
+| 权限域 | 权限 |
+|--------|------|
+| **Account** → *Workers Scripts* | **Edit** |
+| **Account** → *Workers KV Storage* | **Edit**（可选，以后要用 KV 时） |
+| **Account** → *Workers Tail* | **Read**（可选，调试） |
+| **User** → *User Details* | **Read**（可选，消除 `wrangler whoami` 的提示） |
+
+**不要**以为只开 **Cloudflare Pages → Edit** 就够；那样 `POST /accounts/.../workers/services/cyberimmo` 会 **Authentication error [code: 10000]**。
+
+4. 生成后复制 Token → 写入 GitHub **Repository secrets** 的 `CLOUDFLARE_API_TOKEN`（**不要用** Global API Key）。
+5. `CLOUDFLARE_ACCOUNT_ID` 必须与该 Token 有权访问的 **同一账号** 的 Account ID 一致（Workers & Pages 右侧可见）。
 
 ### 2. 查看 Account ID
 

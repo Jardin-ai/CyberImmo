@@ -48,6 +48,14 @@ jobs:
           echo "NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH:-<empty>}"
           bun run build:cf
 
+      # Token 须含 Account → Workers Scripts → Edit，否则 API 10000：https://dash.cloudflare.com/profile/api-tokens
+      - name: Verify Cloudflare token (Workers permission)
+        working-directory: web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bun x wrangler whoami
+
       # OpenNext 必须用 wrangler deploy（main + assets），不能把 worker.js 单独丢进 pages deploy（相对导入会全部解析失败）。
       - name: Deploy to Cloudflare (Worker + static assets)
         run: bun x wrangler deploy

@@ -399,3 +399,9 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Trigger**: `pages deploy` + `_worker.js` 拷贝导致 esbuild 无法解析 `./cloudflare/...` 等相对导入。
 - **Execution**: 改回官方路径：`web/wrangler.toml` 使用 `main`、 `[assets]`（`run_worker_first=true`）、`WORKER_SELF_REFERENCE`；去掉无效 KV 占位；`deploy.yml` 改为 `wrangler deploy`；文档与 akifukaku 反代说明改为 `*.workers.dev`；`preview:cf` → `wrangler dev`。
 - **Debt & Opt**: 首迁若报 Durable Object / migrations，按 Wrangler 提示补 `[[migrations]]`；边缘反代 Worker 的 `targetHost` 须与控制台 Worker 默认域一致。
+
+### [2026-04-15 16:00:00] [Cursor]
+
+- **Trigger**: `wrangler deploy` Cloudflare API 10000。
+- **Execution**: `docs/cloudflare-github-actions.md` 明确 Token 须含 **Workers Scripts → Edit**（仅 Pages 不够）；`deploy.yml` 增加 `wrangler whoami` 预检。
+- **Debt & Opt**: 用户在 Profile 用「Edit Cloudflare Workers」模板重建 Token 并更新 `CLOUDFLARE_API_TOKEN`。
