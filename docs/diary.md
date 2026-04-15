@@ -417,3 +417,9 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Trigger**: `wrangler deploy` 10021，`middleware/handler.mjs` 中 `createRequire` 收到 `undefined`（Next 16 `proxy.ts` + OpenNext 1.5）。
 - **Execution**: 删除 `web/src/proxy.ts`，新增等价 `web/src/middleware.ts`（导出 `middleware`）；`docs/cloudflare-github-actions.md` 增加10021 排错说明。
 - **Debt & Opt**: 升级 `@opennextjs/cloudflare` 后可再改回 `proxy.ts` 并跟进官方 Next 16 支持。
+
+### [2026-04-15 17:30:00] [Cursor]
+
+- **Trigger**: 线上1101 Worker threw exception。
+- **Execution**: `deploy.yml` 构建步写 `base_path` 至 `GITHUB_OUTPUT`；`wrangler deploy` 增加 `--keep-vars` 与 `--var` 注入 `NEXT_PUBLIC_SUPABASE_*`、`NEXT_PUBLIC_BASE_PATH`；默认子路径修正为 `/cyberimmo`（原误 `/CyberImmo`）；文档增加 1101 排错。
+- **Debt & Opt**: 非 NEXT_PUBLIC 的服务端密钥仍需在控制台或 `wrangler secret` 配置。
