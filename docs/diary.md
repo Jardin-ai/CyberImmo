@@ -387,3 +387,9 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Trigger**: `*.pages.dev/cyberimmo` 全 404。
 - **Execution**: 确认未设 `NEXT_PUBLIC_BASE_PATH` 时产物在 `assets/_next`（根站），访问 `/cyberimmo` 与带 basePath 的 URL 不一致。`deploy.yml`/`ci-web.yml` 构建步用 bash解析：`__ROOT__`→空，非空则用变量，否则默认 `/cyberimmo`；`docs/cloudflare-github-actions.md` 增补排错表与 Variable 说明。
 - **Debt & Opt**: 重跑部署后应用 `fe5fea72.*` 预览 URL 验证；独立域名务必用 `__ROOT__` 触发无 basePath 构建。
+
+### [2026-04-15 14:00:00] [Cursor]
+
+- **Trigger**: Secrets/Variables 正确仍 404。
+- **Execution**: 根因：`wrangler pages deploy .open-next/assets` 未包含 OpenNext 的 `worker.js`，Pages 无 SSR 路由。`deploy.yml` 在 deploy 前增加 `cp .open-next/worker.js .open-next/assets/_worker.js`；`docs/cloudflare-github-actions.md` 排错节区分 Worker 缺失 vs basePath；`package.json` 增加 `pages:bundle` 供本地打包。
+- **Debt & Opt**: 若仍异常可改用官方 `opennextjs-cloudflare deploy`（Workers）；检查 `wrangler.toml` 中 KV占位 ID 是否导致部署/运行时错误。

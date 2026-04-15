@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "build:cf": "next build && bun x opennextjs-cloudflare build",
+    "pages:bundle": "node -e \"require('fs').copyFileSync('.open-next/worker.js','.open-next/assets/_worker.js')\"",
     "preview:cf": "wrangler pages dev",
     "preview:static": "npx --yes serve@14 out -p 3000"
   },
