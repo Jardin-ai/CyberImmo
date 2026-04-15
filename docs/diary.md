@@ -393,3 +393,9 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Trigger**: Secrets/Variables 正确仍 404。
 - **Execution**: 根因：`wrangler pages deploy .open-next/assets` 未包含 OpenNext 的 `worker.js`，Pages 无 SSR 路由。`deploy.yml` 在 deploy 前增加 `cp .open-next/worker.js .open-next/assets/_worker.js`；`docs/cloudflare-github-actions.md` 排错节区分 Worker 缺失 vs basePath；`package.json` 增加 `pages:bundle` 供本地打包。
 - **Debt & Opt**: 若仍异常可改用官方 `opennextjs-cloudflare deploy`（Workers）；检查 `wrangler.toml` 中 KV占位 ID 是否导致部署/运行时错误。
+
+### [2026-04-15 15:30:00] [Cursor]
+
+- **Trigger**: `pages deploy` + `_worker.js` 拷贝导致 esbuild 无法解析 `./cloudflare/...` 等相对导入。
+- **Execution**: 改回官方路径：`web/wrangler.toml` 使用 `main`、 `[assets]`（`run_worker_first=true`）、`WORKER_SELF_REFERENCE`；去掉无效 KV 占位；`deploy.yml` 改为 `wrangler deploy`；文档与 akifukaku 反代说明改为 `*.workers.dev`；`preview:cf` → `wrangler dev`。
+- **Debt & Opt**: 首迁若报 Durable Object / migrations，按 Wrangler 提示补 `[[migrations]]`；边缘反代 Worker 的 `targetHost` 须与控制台 Worker 默认域一致。

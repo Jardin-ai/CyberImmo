@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare Pages
+name: Deploy to Cloudflare (OpenNext Worker)
 
 on:
   push:
@@ -48,14 +48,9 @@ jobs:
           echo "NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH:-<empty>}"
           bun run build:cf
 
-      # OpenNext 的 SSR/路由在 .open-next/worker.js；只 deploy assets 目录不会带上 Worker，全站会 404。Pages 高级模式要求输出目录根下有 _worker.js。
-      - name: Bundle OpenNext worker for Pages
-        run: cp .open-next/worker.js .open-next/assets/_worker.js
-        working-directory: web
-
-      # Pages 项目名 = 控制台里该 Pages 项目的名称；Variable：CLOUDFLARE_PAGES_PROJECT 或 CLOUDFLARE_PAGES_PROJECT_NAME
-      - name: Deploy to Cloudflare Pages
-        run: bun x wrangler pages deploy .open-next/assets --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT != '' && vars.CLOUDFLARE_PAGES_PROJECT || vars.CLOUDFLARE_PAGES_PROJECT_NAME != '' && vars.CLOUDFLARE_PAGES_PROJECT_NAME || 'cyberimmo' }} --commit-dirty=true
+      # OpenNext 必须用 wrangler deploy（main + assets），不能把 worker.js 单独丢进 pages deploy（相对导入会全部解析失败）。
+      - name: Deploy to Cloudflare (Worker + static assets)
+        run: bun x wrangler deploy
         working-directory: web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
