@@ -344,3 +344,7 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
   - `@opennextjs/cloudflare@1.5.0` 内部导入 `cloudflare` SDK，但未在 `peerDependencies` 中声明，属于上游 bug；最小修复是将其提升为项目直接依赖。
 - **Handoff**:
   - 无遗留债务，下次 `bun run build:cf` 应正常通过。
+### [2026-04-15 11:52:43] [Cursor]
+- **Trigger**: GitHub Action cloudflare/wrangler-action@v3 失败，日志显示 /home/runner/.bun/bin/bunx exit 1。
+- **Execution**: [.github/workflows/deploy.yml](.github/workflows/deploy.yml) 为 deploy 步骤增加 `packageManager: npm`、`wranglerVersion: "4"`，避免根据 bun.lock 推断用 bunx 调 wrangler。
+- **Debt & Opt**: 若仍失败，检查 wrangler.toml 中 KV id 是否仍为占位符；需真实 ID 或临时注释 [[kv_namespaces]] 再试。
