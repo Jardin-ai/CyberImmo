@@ -405,3 +405,9 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Trigger**: `wrangler deploy` Cloudflare API 10000。
 - **Execution**: `docs/cloudflare-github-actions.md` 明确 Token 须含 **Workers Scripts → Edit**（仅 Pages 不够）；`deploy.yml` 增加 `wrangler whoami` 预检。
 - **Debt & Opt**: 用户在 Profile 用「Edit Cloudflare Workers」模板重建 Token 并更新 `CLOUDFLARE_API_TOKEN`。
+
+### [2026-04-15 16:15:00] [Cursor]
+
+- **Trigger**: `wrangler deploy` API 100328，免费计划不支持 CPU limits。
+- **Execution**: `web/wrangler.toml` 移除 `[limits] cpu_ms`，改为注释说明仅付费可开；`docs/cloudflare-github-actions.md` 增加排错条。
+- **Debt & Opt**: None

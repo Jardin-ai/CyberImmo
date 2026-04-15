@@ -16,8 +16,9 @@ run_worker_first = true
 binding = "WORKER_SELF_REFERENCE"
 service = "cyberimmo"
 
-[limits]
-cpu_ms = 50000
+# 免费 Workers 计划不支持 [limits]（会报 100328）。付费计划若需提高 CPU 再取消注释：
+# [limits]
+# cpu_ms = 50000
 
 # 需要 KV 时：bunx wrangler kv namespace create CACHE，填入 id 后取消注释
 # [[kv_namespaces]]
