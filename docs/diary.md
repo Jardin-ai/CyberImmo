@@ -381,3 +381,9 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Trigger**: Pages 根路径404；按评审收紧 Worker 文档与路径匹配。
 - **Execution**: `web/next.config.ts` 在有 `basePath` 时增加 `redirects`：`/` → `{basePath}/`（`basePath: false`）；`docs/cloudflare-github-actions.md`第五节重写：Route A/B、收紧 `isCyberimmo`、与 Pages 路径对齐说明、推荐 Worker 脚本、控制台顺序与 Supabase。
 - **Debt & Opt**: 若 OpenNext 线上未生效根重定向，可再查 `_routes`/`middleware`；Worker 内 `targetHost` 须与 Pages 控制台子域一致。
+
+### [2026-04-15 13:15:00] [Cursor]
+
+- **Trigger**: `*.pages.dev/cyberimmo` 全 404。
+- **Execution**: 确认未设 `NEXT_PUBLIC_BASE_PATH` 时产物在 `assets/_next`（根站），访问 `/cyberimmo` 与带 basePath 的 URL 不一致。`deploy.yml`/`ci-web.yml` 构建步用 bash解析：`__ROOT__`→空，非空则用变量，否则默认 `/cyberimmo`；`docs/cloudflare-github-actions.md` 增补排错表与 Variable 说明。
+- **Debt & Opt**: 重跑部署后应用 `fe5fea72.*` 预览 URL 验证；独立域名务必用 `__ROOT__` 触发无 basePath 构建。

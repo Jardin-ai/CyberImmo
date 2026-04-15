@@ -29,14 +29,24 @@ jobs:
         run: bun install --frozen-lockfile
         working-directory: web
 
+      # 未设 NEXT_PUBLIC_BASE_PATH 时默认 /cyberimmo（与 Worker 子路径一致）；独立根域名构建请设 Variable 为 __ROOT__
       - name: Build (OpenNext for Cloudflare)
-        run: bun run build:cf
         working-directory: web
         env:
-          # 子目录部署设仓库 Variable；独立域名留空或不建该变量
-          NEXT_PUBLIC_BASE_PATH: ${{ vars.NEXT_PUBLIC_BASE_PATH }}
+          RAW_BASE: ${{ vars.NEXT_PUBLIC_BASE_PATH }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          set -e
+          if [ "$RAW_BASE" = "__ROOT__" ]; then
+            export NEXT_PUBLIC_BASE_PATH=""
+          elif [ -n "$RAW_BASE" ]; then
+            export NEXT_PUBLIC_BASE_PATH="$RAW_BASE"
+          else
+            export NEXT_PUBLIC_BASE_PATH="/cyberimmo"
+          fi
+          echo "NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH:-<empty>}"
+          bun run build:cf
 
       # Pages 项目名须与 Cloudflare 控制台中的项目 slug 一致；可在 Repo → Settings → Variables 设置 CLOUDFLARE_PAGES_PROJECT 覆盖默认值 cyberimmo。
       - name: Deploy to Cloudflare Pages
