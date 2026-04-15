@@ -435,3 +435,9 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Trigger**: 用户问是否与 Dashboard 导出的 observability（persist、invocation_logs、顶层 enabled）一致。
 - **Execution**: `web/wrangler.toml` 补全为与 JSONC 等价的 TOML；`npx wrangler deploy --dry-run` 通过。
 - **Debt & Opt**: 若线上行为与顶层 `enabled = false` 预期不符，可改为 `enabled = true` 并对照官方 Observability 文档。
+
+### [2026-04-15 20:00:00] [Cursor]
+
+- **Trigger**: Cloudflare Workers Logs 报 `Unexpected loadManifest(/.next/server/prefetch-hints.json) call!`，访问 `/cyberimmo` 与 `/favicon.ico` 均 1101。
+- **Execution**: 确认为 `next@16.2.x` 与旧版 `@opennextjs/cloudflare` 的已知兼容问题；升级 `web/package.json` 中 `@opennextjs/cloudflare` 至 `1.19.1`，同步更新 `web/bun.lock`；本地以 `NEXT_PUBLIC_BASE_PATH=/cyberimmo bun run build:cf` 验证通过。
+- **Debt & Opt**: 需重新部署到 Cloudflare 才会生效；`middleware` deprecation warning 仍存在，待 OpenNext / Next 官方兼容稳定后再评估切回 `proxy.ts`。
