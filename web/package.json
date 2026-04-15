@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "build:cf": "next build && bunx @opennextjs/cloudflare",
+    "build:cf": "next build && npx opennextjs-cloudflare build",
     "preview:cf": "wrangler pages dev",
     "preview:static": "npx --yes serve@14 out -p 3000"
   },
@@ -27,7 +27,7 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^1.5.0",
+    "@opennextjs/cloudflare": "1.5.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -5,6 +5,15 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import DashboardContainer from "./DashboardContainer";
 
+type PersonaRow = {
+  id: string;
+  display_name: string;
+  relationship_label: string;
+  questionnaire_data: unknown;
+  created_at: string;
+  chat_logs: { created_at: string }[] | null;
+};
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -74,7 +83,7 @@ export default async function DashboardPage() {
 
           {personas && personas.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
-              {personas.map((persona: any) => {
+              {personas.map((persona: PersonaRow) => {
                 const qData = persona.questionnaire_data as Record<
                   string,
                   unknown

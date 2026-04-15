@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, startTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
@@ -42,8 +42,10 @@ function useTypewriter() {
           setDisplayed((prev) => prev.slice(0, -1));
         }, ERASING_INTERVAL);
       } else {
-        setSloganIndex((i) => (i + 1) % SLOGANS.length);
-        setPhase("typing");
+        startTransition(() => {
+          setSloganIndex((i) => (i + 1) % SLOGANS.length);
+          setPhase("typing");
+        });
       }
     }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import StepShell from "@/components/onboarding/StepShell";
-import Input from "@/components/ui/Input";
 import TextArea from "@/components/ui/TextArea";
 import ChipSelect from "@/components/ui/ChipSelect";
 import {

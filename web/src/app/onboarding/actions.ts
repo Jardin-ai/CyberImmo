@@ -6,6 +6,23 @@ import { buildSystemPrompt } from "@/lib/prompt-builder";
 import { FREE_TOKEN_GRANT } from "@/lib/constants";
 import { PRIVACY_AGREEMENT_CONTENT } from "@/lib/privacy-content";
 import type { QuestionnaireData } from "@/lib/types";
+import type { UIMessage } from "ai";
+
+type TextPart = { type: "text"; text: string };
+
+function textFromUiMessage(m: UIMessage): string {
+  const parts = (
+    m as UIMessage & { parts?: Array<{ type: string; text?: string }> }
+  ).parts;
+  if (Array.isArray(parts)) {
+    return parts
+      .filter((p): p is TextPart => p.type === "text" && typeof p.text === "string")
+      .map((p) => p.text)
+      .join("");
+  }
+  const legacy = m as UIMessage & { content?: string };
+  return legacy.content ?? "";
+}
 
 export async function submitOnboarding(
   data: QuestionnaireData
@@ -101,7 +118,7 @@ export async function submitOnboarding(
 
 export async function syncGuestMessages(
   personaId: string,
-  messages: any[]
+  messages: UIMessage[]
 ): Promise<{ success?: boolean; error?: string }> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -113,21 +130,18 @@ export async function syncGuestMessages(
   // Filter messages to sync (only user and assistant)
   const logsToInsert = messages
     .filter((m) => m.role === "user" || m.role === "assistant")
-    .map((m) => ({
-      persona_id: personaId,
-      user_id: user.id,
-      session_id: personaId,
-      role: m.role,
-      content:
-        m.parts
-          ?.filter((p: any) => p.type === "text")
-          .map((p: any) => p.text)
-          .join("") ??
-        m.content ??
-        "",
-      token_cost: 0,
-      created_at: m.createdAt || new Date().toISOString(),
-    }));
+    .map((m) => {
+      const withCreated = m as UIMessage & { createdAt?: string };
+      return {
+        persona_id: personaId,
+        user_id: user.id,
+        session_id: personaId,
+        role: m.role,
+        content: textFromUiMessage(m),
+        token_cost: 0,
+        created_at: withCreated.createdAt ?? new Date().toISOString(),
+      };
+    });
 
   if (logsToInsert.length === 0) return { success: true };
 

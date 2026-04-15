@@ -330,3 +330,8 @@ All done. Here's a summary of everything completed:
 - **Trigger**: Cloudflare 托管 + basePath/static export 策略与 GitHub Actions 文档及工作流。
 - **Execution**: [web/next.config.ts](web/next.config.ts) 合并云上 OpenNext 配置与 `NEXT_PUBLIC_BASE_PATH` / `NEXT_STATIC_EXPORT` / `images.unoptimized`；保留 [.github/workflows/deploy.yml](.github/workflows/deploy.yml)（OpenNext → `.open-next/assets`）；新增/保留 [.github/workflows/ci-web.yml](.github/workflows/ci-web.yml)；更新 [docs/cloudflare-github-actions.md](docs/cloudflare-github-actions.md) 与 deploy 对齐；[web/package.json](web/package.json) 在保留 `build:cf` / `preview:cf` 基础上增加 `preview:static`。已删除与 `deploy.yml` 重复的 `deploy-cyberimmo-cloudflare-pages.yml`（避免双次部署与错误产物路径）。
 - **Debt & Opt**: 主站合并静态子目录方案见 cloudflare 文档；OpenNext 为主路径，static export 仅作可选子路径/主站拼盘用。
+### [2026-04-15 11:42:35] [Cursor]
+- **Trigger**: CI 失败：bunx @opennextjs/cloudflare 无入口；ESLint 12 个 error；OpenNext 1.19 与 Next16 Node Proxy 不兼容。
+- **Execution**: package.json uild:cf 改为 
+px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 open-next.config（proxyExternalRequest + middleware override）；ChatClient/guest/HeroSection/model-context/dashboard/onboarding 等修 lint；web/.gitignore 忽略 .open-next/。
+- **Debt & Opt**: 升级 Next 至 >=16.2.3 或评估 OpenNext 新版本前需再测 Proxy；lint 仍有 img 等 warning。

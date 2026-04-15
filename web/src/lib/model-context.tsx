@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 export type ModelId = "glm-4" | "glm-4-flash";
 
@@ -32,17 +32,13 @@ const ModelContext = createContext<ModelContextValue>({
 });
 
 export function ModelProvider({ children }: { children: ReactNode }) {
-  const [modelId, setModelIdState] = useState<ModelId>("glm-4");
-
-  useEffect(() => {
+  const [modelId, setModelIdState] = useState<ModelId>(() => {
+    if (typeof window === "undefined") return "glm-4";
     const saved = localStorage.getItem("cyberimmo_model");
-    // Migrate legacy deepseek-chat → glm-4
-    if (saved === "deepseek-chat" || saved === "glm-4") {
-      setModelIdState("glm-4");
-    } else if (saved === "glm-4-flash") {
-      setModelIdState("glm-4-flash");
-    }
-  }, []);
+    if (saved === "deepseek-chat" || saved === "glm-4") return "glm-4";
+    if (saved === "glm-4-flash") return "glm-4-flash";
+    return "glm-4";
+  });
 
   const setModelId = (id: ModelId) => {
     setModelIdState(id);

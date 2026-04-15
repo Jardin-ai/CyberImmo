@@ -7,8 +7,8 @@ import { Send, User as UserIcon, ImageIcon, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import MainSidebar from "@/components/MainSidebar";
 import { ModelProvider, useModel } from "@/lib/model-context";
+import type { QuestionnaireData } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 
 interface ChatClientProps {
@@ -34,8 +34,6 @@ function ChatInner({
   avatarUrl,
   displayName,
   userId,
-  userDisplayName,
-  userAvatarUrl,
   initialMessages,
   isGuest = false,
   guestQuota = 50,
@@ -44,23 +42,21 @@ function ChatInner({
   const [localInput, setLocalInput] = useState("");
   const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
-  const [currentQuota, setCurrentQuota] = useState(guestQuota);
+  const [currentQuota, setCurrentQuota] = useState(() => {
+    if (typeof window === "undefined") return guestQuota;
+    if (!isGuest) return guestQuota;
+    const saved = localStorage.getItem(GUEST_QUOTA_KEY);
+    if (saved) return parseInt(saved, 10);
+    localStorage.setItem(GUEST_QUOTA_KEY, String(guestQuota));
+    return guestQuota;
+  });
   const [showRegPrompt, setShowRegPrompt] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabaseClient = createClient();
 
-  // Initialize quota from localStorage if guest
-  useEffect(() => {
-    if (isGuest) {
-      const saved = localStorage.getItem(GUEST_QUOTA_KEY);
-      if (saved) setCurrentQuota(parseInt(saved));
-      else localStorage.setItem(GUEST_QUOTA_KEY, "50");
-    }
-  }, [isGuest]);
-
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
-    // @ts-ignore
+    // @ts-expect-error useChat 运行时支持 initialMessages，包内类型未完全对齐
     initialMessages,
     onFinish: () => {
       if (isGuest) {
@@ -134,14 +130,20 @@ function ChatInner({
       removePendingImage();
     }
 
-    const bodyData: any = { personaId, modelId, isGuest };
+    const bodyData: {
+      personaId: string;
+      modelId: string;
+      isGuest: boolean;
+      personaDraft?: QuestionnaireData;
+    } = { personaId, modelId, isGuest };
     if (isGuest) {
       const savedDraft = localStorage.getItem("cyberimmo_persona_draft");
-      if (savedDraft) bodyData.personaDraft = JSON.parse(savedDraft);
+      if (savedDraft)
+        bodyData.personaDraft = JSON.parse(savedDraft) as QuestionnaireData;
     }
 
     sendMessage(
-      // @ts-ignore — experimental_attachments is valid in AI SDK v6
+      // @ts-expect-error AI SDK v6 支持 experimental_attachments
       { text: localInput, experimental_attachments: attachments },
       { body: { data: bodyData } }
     );
