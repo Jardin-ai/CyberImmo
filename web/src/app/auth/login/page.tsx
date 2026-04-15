@@ -1,11 +1,13 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { getPath } from "@/lib/public-base-path";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
 function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +57,8 @@ function LoginForm() {
       }
     }
 
-    window.location.href = target;
+    router.push(getPath(target));
+    router.refresh();
   }
 
   return (
@@ -146,7 +149,9 @@ function LoginForm() {
       >
         还没有账号？{" "}
         <Link
-          href={`/auth/register?redirect=${encodeURIComponent(redirect)}`}
+          href={getPath(
+            `/auth/register?redirect=${encodeURIComponent(redirect)}`,
+          )}
           style={{ color: "var(--accent-gold)" }}
         >
           立即注册

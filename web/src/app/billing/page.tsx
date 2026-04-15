@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getPath } from "@/lib/public-base-path";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import BillingClient from "./BillingClient";
@@ -10,7 +11,7 @@ export default async function BillingPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth/login");
+    redirect(getPath("/auth/login"));
   }
 
   // Fetch user subscription info

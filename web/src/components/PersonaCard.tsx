@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getPath } from "@/lib/public-base-path";
 import { Pencil } from "lucide-react";
 
 interface PersonaCardProps {
@@ -82,7 +83,7 @@ export default function PersonaCard({
                 {displayName}
               </h2>
               <Link 
-                href={`/dashboard/edit/${id}`}
+                href={getPath(`/dashboard/edit/${id}`)}
                 className="p-1 rounded-full text-[#475569] transition-colors hover:text-[#D4A017] hover:bg-white/5 z-20"
                 title="修改档案"
               >
@@ -106,7 +107,7 @@ export default function PersonaCard({
             </span>
           </div>
 
-          <Link href={`/chat/${id}`} className="z-20">
+          <Link href={getPath(`/chat/${id}`)} className="z-20">
             <button 
               className="rounded-full px-5 py-2 text-xs font-medium transition-all hover:bg-[#D4A017] hover:text-[#16171D] whitespace-nowrap"
               style={{
@@ -121,7 +122,7 @@ export default function PersonaCard({
         </div>
         
         {/* Whole card clickable overlay layer */}
-        <Link href={`/chat/${id}`} className="absolute inset-0 z-0" />
+        <Link href={getPath(`/chat/${id}`)} className="absolute inset-0 z-0" />
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getPath } from "@/lib/public-base-path";
 import HeroSection from "@/components/HeroSection";
 
 export default async function HomePage() {
@@ -13,7 +14,7 @@ export default async function HomePage() {
   }
 
   if (!user.user_metadata?.privacy_agreed) {
-    redirect("/onboarding");
+    redirect(getPath("/onboarding"));
   }
 
   // Check if user has an active persona
@@ -25,8 +26,8 @@ export default async function HomePage() {
     .limit(1);
 
   if (personas && personas.length > 0) {
-    redirect("/dashboard");
+    redirect(getPath("/dashboard"));
   }
 
-  redirect("/onboarding");
+  redirect(getPath("/onboarding"));
 }

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getPath } from "@/lib/public-base-path";
 import ChatClient from "./ChatClient";
 import type { UIMessage } from "@ai-sdk/react";
 import { generateId } from "ai";
@@ -17,7 +18,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth/login");
+    redirect(getPath("/auth/login"));
   }
 
   // Parallel fetch for better performance

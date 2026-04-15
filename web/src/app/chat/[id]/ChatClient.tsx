@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, User as UserIcon, ImageIcon, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { getPath } from "@/lib/public-base-path";
 import ReactMarkdown from "react-markdown";
 import { ModelProvider, useModel } from "@/lib/model-context";
 import type { QuestionnaireData } from "@/lib/types";
@@ -178,7 +179,7 @@ function ChatInner({
               </p>
               <div className="flex flex-col gap-4">
                 <Link
-                  href="/auth/register"
+                  href={getPath("/auth/register")}
                   className="flex h-12 items-center justify-center rounded-xl bg-accent font-medium text-black transition-opacity hover:opacity-90"
                 >
                   立即注册 / 登录
@@ -202,7 +203,7 @@ function ChatInner({
       {/* Header */}
       <header className="relative z-10 flex h-14 shrink-0 items-center border-b border-border bg-surface/50 px-4 backdrop-blur-md">
         <Link
-          href={isGuest ? "/" : "/dashboard"}
+          href={isGuest ? getPath("/") : getPath("/dashboard")}
           onClick={(e) => {
             if (isGuest) {
               e.preventDefault();

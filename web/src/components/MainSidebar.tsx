@@ -14,6 +14,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { getPath } from "@/lib/public-base-path";
 import { useEffect, useState, useTransition } from "react";
 
 interface MainSidebarProps {
@@ -133,7 +134,7 @@ export default function MainSidebar({
       {/* Body */}
       <div className="flex-1 overflow-y-auto p-3 space-y-1">
         {/* User */}
-        <Link href="/settings" onClick={onClose}>
+        <Link href={getPath("/settings")} onClick={onClose}>
           <div className="group flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-colors hover:bg-white/4">
             <div
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border overflow-hidden"
@@ -215,7 +216,7 @@ export default function MainSidebar({
                 回声余额
               </span>
             </div>
-            <Link href="/billing?tab=recharge" onClick={onClose}>
+            <Link href={getPath("/billing?tab=recharge")} onClick={onClose}>
               <span
                 className="rounded-full px-2 py-0.5 text-[10px] font-medium transition-opacity hover:opacity-70 cursor-pointer"
                 style={{
@@ -286,7 +287,7 @@ export default function MainSidebar({
 
           {/* Low balance nudge */}
           {!isFreeTier && balance <= 100 && (
-            <Link href="/billing?tab=recharge" onClick={onClose}>
+            <Link href={getPath("/billing?tab=recharge")} onClick={onClose}>
               <p
                 className="mt-2 text-[11px] text-center transition-opacity hover:opacity-70"
                 style={{ color: "var(--accent-gold)" }}
@@ -327,7 +328,7 @@ export default function MainSidebar({
           >
             账户管理
           </p>
-          <Link href="/billing?tab=history" onClick={onClose}>
+          <Link href={getPath("/billing?tab=history")} onClick={onClose}>
             <button
               className="flex w-full items-center gap-3 rounded-xl p-3 text-sm transition-colors hover:bg-white/4"
               style={{ color: "var(--text-secondary)" }}
@@ -336,7 +337,7 @@ export default function MainSidebar({
               <span>消耗记录</span>
             </button>
           </Link>
-          <Link href="/billing?tab=recharge" onClick={onClose}>
+          <Link href={getPath("/billing?tab=recharge")} onClick={onClose}>
             <button
               className="flex w-full items-center gap-3 rounded-xl p-3 text-sm transition-colors hover:bg-white/4"
               style={{ color: "var(--text-secondary)" }}

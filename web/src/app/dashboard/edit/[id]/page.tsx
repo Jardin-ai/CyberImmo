@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import OnboardingClient from "@/app/onboarding/client";
 import VoiceUploader from "@/components/persona/VoiceUploader";
 import Link from "next/link";
+import { getPath } from "@/lib/public-base-path";
 import { ArrowLeft } from "lucide-react";
 
 interface PageProps {
@@ -14,7 +15,7 @@ export default async function EditPersonaPage({ params }: PageProps) {
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/auth/login");
+  if (!user) redirect(getPath("/auth/login"));
 
   const { data: persona, error } = await supabase
     .from("personas")
@@ -31,7 +32,7 @@ export default async function EditPersonaPage({ params }: PageProps) {
     <div className="min-h-dvh bg-background relative overflow-hidden">
       {/* Back button */}
       <Link
-        href="/dashboard"
+        href={getPath("/dashboard")}
         className="absolute left-6 top-8 z-30 flex items-center gap-2 text-sm text-foreground/40 transition-colors hover:text-accent"
       >
         <ArrowLeft size={16} />

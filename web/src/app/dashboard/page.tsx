@@ -2,6 +2,7 @@ import PersonaCard from "@/components/PersonaCard";
 import { createClient } from "@/lib/supabase/server";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { getPath } from "@/lib/public-base-path";
 import { redirect } from "next/navigation";
 import DashboardContainer from "./DashboardContainer";
 
@@ -21,7 +22,7 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth/login");
+    redirect(getPath("/auth/login"));
   }
 
   // Parallel fetch for better performance
@@ -73,7 +74,7 @@ export default async function DashboardPage() {
               </p>
             </div>
 
-            <Link href="/onboarding">
+            <Link href={getPath("/onboarding")}>
               <button className="flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm text-accent transition-colors hover:bg-surface/80">
                 <Plus className="h-4 w-4" />
                 <span>新建记忆档案</span>
@@ -107,7 +108,7 @@ export default async function DashboardPage() {
               <p className="text-center text-sm text-foreground/50 mb-4">
                 您还没有创建任何记忆档案。
               </p>
-              <Link href="/onboarding">
+              <Link href={getPath("/onboarding")}>
                 <button className="rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-black transition-opacity hover:opacity-90">
                   立即建档
                 </button>

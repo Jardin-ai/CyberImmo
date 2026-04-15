@@ -46,8 +46,89 @@ Dashboard右侧 **Account** 任意域名概览页下方，或 **Workers & Pages*
 
 ### 4. 自定义域名（可选）
 
-- **cyberimmo 独立站**：在 Pages 项目 → **Custom domains** 绑定 `cyberimmo.xyz`。
+- **cyberimmo 独立站**：在 Pages 项目 → **Custom domains** 绑定 `cyberimmo.xyz`（此时不要设置 `NEXT_PUBLIC_BASE_PATH`，与本仓库 `deploy.yml` 中 `/cyberimmo` 互斥；独立域名部署需从 workflow 里去掉或改为仓库变量）。
 - **主站子路径**：通常由 **主站一次部署的目录结构** 决定（见第五节），不一定给 CyberImmo 单独绑根域名。
+
+### 5. 主域名子路径 `https://akifukaku.com/cyberimmo`（独立 Pages + Worker 反代）
+
+Cloudflare **Pages 自定义域名**按「主机名」绑定，不能把本项目**单独**挂成只占用 `akifukaku.com/cyberimmo` 又不影响 apex 根站。做法是：CyberImmo 仍部署到 **`*.pages.dev`**（构建须带 [`NEXT_PUBLIC_BASE_PATH`](../web/next.config.ts)），在 **akifukaku.com 所在 Zone** 建 **Worker**，只接管子路径。
+
+#### 5.1 路由怎么配（推荐写法 A）
+
+**A）只挂子路径路由（推荐）**  
+Workers → 该 Worker → **Triggers** → **Routes** → Add route：
+
+- **Route**：`akifukaku.com/cyberimmo*`（或 `*akifukaku.com/cyberimmo*`，以控制台为准）
+- **Zone**：`akifukaku.com`
+
+这样 **只有** 匹配该模式的请求会进 Worker，**主站其余流量不经过本 Worker**，逻辑最简单。
+
+**B）整站 `akifukaku.com/*` 进 Worker**（少用）  
+此时才需要「匹配则转发 CyberImmo，否则 `fetch(request)` 回源」；回源要配合源站/DNS，比 A 复杂，当前阶段不必采用。
+
+在采用 **A** 时，Worker 内 **只保留「改 host + 转发」即可**；若 Route 已限定 `/cyberimmo*`，`pathname` 分支里的 `else` 可删，或留注释说明「仅当整站路由时才需要回源分支」。
+
+#### 5.2 路径匹配（避免误伤 `/cyberimmoxxx`）
+
+不要用 `pathname.startsWith("/cyberimmo")`（会把 `/cyberimmoxxx` 也算进来）。收紧为：
+
+```javascript
+const p = url.pathname;
+const isCyberimmo = p === "/cyberimmo" || p.startsWith("/cyberimmo/");
+```
+
+#### 5.3 与 Pages 上「真实路径」对齐（易踩坑）
+
+Worker **只改 `hostname`、不改 `pathname`** 时，浏览器访问：
+
+`https://akifukaku.com/cyberimmo/...` → Worker → `https://<你的项目>.pages.dev/cyberimmo/...`
+
+因此 **构建必须带 `basePath`**（本仓库通过 `NEXT_PUBLIC_BASE_PATH=/cyberimmo`），使 Pages 上页面与 `/_next` 等静态资源都在 **`/cyberimmo/...`** 下可访问。
+
+- **验证**：浏览器直接打开 `https://<你的>.pages.dev/cyberimmo/`（注意带 **`/cyberimmo`**）应能正常打开；再看 Network 里静态资源是否 200。
+- **根 URL 404**：带 `basePath` 时 **`https://xxx.pages.dev/`**历史上没有对应页面会 **404**。本仓库在 [`next.config.ts`](../web/next.config.ts) 里增加了 **`/` → `/cyberimmo/`** 的 redirect（`basePath: false`），重新部署后访问 **`https://xxx.pages.dev/`** 应跳到应用入口。若仍 404，请确认已用最新构建部署，或直接访问 **`/cyberimmo/`**。
+
+若 Pages 上始终是「站根」结构（`/`, `/_next/...`）而无 `basePath`，则 **不能** 只用「只改 host」的脚本，而要在 Worker 里做 **去前缀** 重写（成本高）；**更推荐** 与当前仓库一致：**带 basePath 的构建 + 只改 host**。
+
+以后上 **独立域名 cyberimmo.xyz**：用 **同一仓库** 再打一份 **不设 `NEXT_PUBLIC_BASE_PATH`** 的构建并绑该域名；与子目录版是 **两条构建/流水线**，不是同一份产物硬套两个域名。
+
+#### 5.4 推荐 Worker 脚本（Route 仅为 `/cyberimmo*` 时）
+
+将 `cyberimmo.pages.dev` 换成你在 **Pages 项目 Overview** 里看到的真实子域（可能是 `项目名.pages.dev`）。
+
+```javascript
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    const p = url.pathname;
+    const isCyberimmo = p === "/cyberimmo" || p.startsWith("/cyberimmo/");
+    //若 Trigger 已写死 akifukaku.com/cyberimmo*，下面分支理论上不会走到 false；保留便于日后改成整站路由时扩展。
+    if (!isCyberimmo) {
+      return fetch(request);
+    }
+    const targetHost = "cyberimmo.pages.dev"; // TODO: 换成你的 *.pages.dev
+    const newUrl = new URL(request.url);
+    newUrl.hostname = targetHost;
+    newUrl.protocol = "https:";
+    return fetch(new Request(newUrl.toString(), request));
+  },
+};
+```
+
+说明：`new Request(newUrl.toString(), request)` 会带上原 Cookie；显式 `https:` 避免极少数环境协议异常。若响应 **302 `Location`** 仍指向 `*.pages.dev`，再按需做响应头改写。
+
+#### 5.5 控制台操作顺序（精简）
+
+1. **Workers & Pages** → Create → **Worker**，粘贴脚本 → Save and deploy。  
+2. 同一 Worker → **Settings** → **Triggers** → **Routes** → Add：`akifukaku.com/cyberimmo*`。  
+3. 确认 CyberImmo **Pages** 已部署，且 **`https://<你的>.pages.dev/cyberimmo/`**（及部署根 `/` 若已配置 redirect）可访问。  
+4. 再测 **`https://akifukaku.com/cyberimmo/`** 与内页、静态资源（`_next` 等）是否 200。
+
+#### 5.6 Supabase
+
+Dashboard → Authentication → URL configuration → **Redirect URLs** 增加：
+
+`https://akifukaku.com/cyberimmo/auth/callback`（本地可另加 `http://localhost:3000/auth/callback` 等）。
 
 ---
 
@@ -68,7 +149,8 @@ Dashboard右侧 **Account** 任意域名概览页下方，或 **Workers & Pages*
 
 | 名称 | 说明 |
 |------|------|
-| `CLOUDFLARE_PAGES_PROJECT_NAME` | Pages 项目名，例如 `cyberimmo`（与 workflow 中 `vars.CLOUDFLARE_PAGES_PROJECT_NAME` 对应） |
+| `CLOUDFLARE_PAGES_PROJECT` | Pages 项目 slug（与 `deploy.yml` 中 `--project-name` 一致），不设则默认 `cyberimmo` |
+| `NEXT_PUBLIC_BASE_PATH` | 子目录部署填 `/cyberimmo`（无尾斜杠）；**独立根域名不要创建此变量或留空**，与 [`web/next.config.ts`](../web/next.config.ts) 联动 |
 
 若不用 Variables，可在 [`deploy.yml`](../.github/workflows/deploy.yml) 里把 `--project-name=cyberimmo` 改成你的固定项目名。
 

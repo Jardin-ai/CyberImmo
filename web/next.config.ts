@@ -27,13 +27,25 @@ const nextConfig: NextConfig = {
   ...(basePath
     ? {
         basePath,
-        assetPrefix: basePath,
+        assetPrefix: `${basePath}/`,
       }
     : {}),
   experimental: {
     serverActions: {
       bodySizeLimit: "4mb",
     },
+  },
+  // 有 basePath 时，站点「根」在 /{basePath}/；直接访问 *.pages.dev/ 会 404，此处把 / 指到应用入口。
+  async redirects() {
+    if (!basePath) return [];
+    return [
+      {
+        source: "/",
+        destination: `${basePath}/`,
+        permanent: false,
+        basePath: false,
+      },
+    ];
   },
   async headers() {
     return [

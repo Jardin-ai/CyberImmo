@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, startTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { getPath } from "@/lib/public-base-path";
 
 const SLOGANS = [
   "将散落的数据碎片，重构为永恒的思念。",
@@ -134,7 +135,7 @@ export default function HeroSection() {
               className="mt-12 flex flex-col items-center gap-6"
             >
               <Link
-                href="/onboarding"
+                href={getPath("/onboarding")}
                 className="group inline-flex items-center gap-3 border border-white/20
                            px-8 py-3 text-sm font-light tracking-[0.2em] text-white/80
                            backdrop-blur-md transition-all duration-300
@@ -152,14 +153,14 @@ export default function HeroSection() {
               {/* Auth links */}
               <div className="flex items-center gap-2 text-xs tracking-widest text-white/30 select-none">
                 <Link
-                  href="/auth/login"
+                  href={getPath("/auth/login")}
                   className="transition-colors duration-200 hover:text-white/70"
                 >
                   登录
                 </Link>
                 <span className="opacity-30">/</span>
                 <Link
-                  href="/auth/register"
+                  href={getPath("/auth/register")}
                   className="transition-colors duration-200 hover:text-white/70"
                 >
                   注册

@@ -364,8 +364,20 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Execution**: `.github/workflows/deploy.yml` 与 `ci-web.yml` 增加工作流级 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`，`actions/setup-node@v4`（node-version `"24"`）；deploy 中 `--project-name` 使用 `vars.CLOUDFLARE_PAGES_PROJECT` 非空则用之，否则默认 `cyberimmo`。
 - **Debt & Opt**: 在 Cloudflare 创建与名称一致的 Pages 项目，或设置仓库变量 `CLOUDFLARE_PAGES_PROJECT`；核对 `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 与账号权限。
 
-### [2026-04-08 12:30:00] [Cursor]
+### [2026-04-08 14:00:00] [Cursor]
 
-- **Trigger**: Wrangler Pages 8000007 项目不存在；Actions 弃用 Node 20，需迁到 Node 24。
-- **Execution**: `.github/workflows/deploy.yml` 与 `ci-web.yml` 增加工作流级 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`，`actions/setup-node@v4`（node-version `"24"`）；deploy 中 `--project-name` 使用 `vars.CLOUDFLARE_PAGES_PROJECT` 非空则用之，否则默认 `cyberimmo`。
-- **Debt & Opt**: 在 Cloudflare 创建与名称一致的 Pages 项目，或设置仓库变量 `CLOUDFLARE_PAGES_PROJECT`；核对 `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 与账号权限。
+- **Trigger**: 将站点挂到 `https://akifukaku.com/cyberimmo`。
+- **Execution**: `deploy.yml` / `ci-web.yml` 构建阶段增加 `NEXT_PUBLIC_BASE_PATH=/cyberimmo`；新增 `web/src/lib/public-base-path.ts`；`proxy.ts` 登录重定向、`auth/callback`、注册邮件 `emailRedirectTo`、登录/注册客户端跳转适配 basePath；`docs/cloudflare-github-actions.md` 第二节增补「独立 Pages + Worker 反代」与 Supabase 回调 URL。
+- **Debt & Opt**: 在 Cloudflare Zone 配置 Worker 路由与环境变量 `CYBERIMMO_PAGES_HOST`；独立根域名部署时需从 workflow 去掉或改写 `NEXT_PUBLIC_BASE_PATH`。
+
+### [2026-04-08 15:30:00] [Cursor]
+
+- **Trigger**: 子目录与独立域名通过环境变量无缝切换；统一导航路径封装。
+- **Execution**: `web/next.config.ts` 的 `assetPrefix` 在有 basePath 时为 `` `${basePath}/` ``；`public-base-path.ts` 提供 `getPath`（供 Link/router/redirect，不重复拼 base）与 `withPublicBasePath`（origin/邮件/Route Handler 重定向）；全站 Link、`router.push`/`replace`、`redirect` 改用 `getPath`；`deploy.yml`/`ci-web.yml` 的 `NEXT_PUBLIC_BASE_PATH` 改为 `${{ vars.NEXT_PUBLIC_BASE_PATH }}`；更新 `docs/cloudflare-github-actions.md` Variables 表。
+- **Debt & Opt**: 仓库需在 Settings → Variables 为子目录部署设置 `NEXT_PUBLIC_BASE_PATH=/cyberimmo`；独立域名勿设该变量。
+
+### [2026-04-08 16:00:00] [Cursor]
+
+- **Trigger**: Pages 根路径404；按评审收紧 Worker 文档与路径匹配。
+- **Execution**: `web/next.config.ts` 在有 `basePath` 时增加 `redirects`：`/` → `{basePath}/`（`basePath: false`）；`docs/cloudflare-github-actions.md`第五节重写：Route A/B、收紧 `isCyberimmo`、与 Pages 路径对齐说明、推荐 Worker 脚本、控制台顺序与 Supabase。
+- **Debt & Opt**: 若 OpenNext 线上未生效根重定向，可再查 `_routes`/`middleware`；Worker 内 `targetHost` 须与 Pages 控制台子域一致。

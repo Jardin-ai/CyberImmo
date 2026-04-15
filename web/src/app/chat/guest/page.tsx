@@ -3,6 +3,7 @@
 import type { UIMessage } from "ai";
 import { useEffect, useState, startTransition } from "react";
 import { useRouter } from "next/navigation";
+import { getPath } from "@/lib/public-base-path";
 import ChatClient from "../[id]/ChatClient";
 import type { QuestionnaireData } from "@/lib/types";
 
@@ -23,7 +24,7 @@ export default function GuestChatPage() {
   useEffect(() => {
     const savedDraft = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (!savedDraft) {
-      router.push("/onboarding");
+      router.push(getPath("/onboarding"));
       return;
     }
     const savedQuota = localStorage.getItem(GUEST_QUOTA_KEY);

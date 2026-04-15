@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import OnboardingClient from "./client";
 import Link from "next/link";
+import { getPath } from "@/lib/public-base-path";
 import { ArrowLeft } from "lucide-react";
 
 export default async function OnboardingPage() {
@@ -13,7 +14,7 @@ export default async function OnboardingPage() {
     <div className="min-h-dvh bg-background relative">
       {/* Back button */}
       <Link 
-        href={user ? "/dashboard" : "/"}
+        href={user ? getPath("/dashboard") : getPath("/")}
         className="absolute left-6 top-8 z-30 flex items-center gap-2 text-sm text-foreground/40 transition-colors hover:text-accent"
       >
         <ArrowLeft size={16} />

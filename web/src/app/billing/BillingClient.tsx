@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { getPath } from "@/lib/public-base-path";
 import { ArrowLeft, Zap, TrendingDown, TrendingUp, Clock } from "lucide-react";
 import PricingTable from "@/components/billing/PricingTable";
 import { SUBSCRIPTION_TIERS } from "@/lib/types";
@@ -47,7 +48,7 @@ export default function BillingClient({
 
   const handleTabChange = (tab: "recharge" | "history") => {
     setActiveTab(tab);
-    router.replace(`/billing?tab=${tab}`, { scroll: false });
+    router.replace(getPath(`/billing?tab=${tab}`), { scroll: false });
   };
 
   return (
@@ -61,7 +62,7 @@ export default function BillingClient({
         style={{ borderColor: "#2D3139", background: "rgba(24,26,31,0.85)" }}
       >
         <Link
-          href="/dashboard"
+          href={getPath("/dashboard")}
           className="flex items-center gap-2 text-sm transition-colors hover:text-accent"
           style={{ color: "rgba(255,255,255,0.5)" }}
         >

@@ -3,9 +3,11 @@
 import { Suspense, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getPath, withPublicBasePath } from "@/lib/public-base-path";
 
 function RegisterForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,7 +32,7 @@ function RegisterForm() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
+        emailRedirectTo: `${window.location.origin}${withPublicBasePath("/auth/callback")}?redirect=${encodeURIComponent(redirect)}`,
       },
     });
 
@@ -40,7 +42,8 @@ function RegisterForm() {
       return;
     }
 
-    window.location.href = redirect;
+    router.push(getPath(redirect));
+    router.refresh();
   }
 
   return (
@@ -147,7 +150,9 @@ function RegisterForm() {
       <p className="text-center text-sm" style={{ color: "var(--text-secondary)" }}>
         已有账号？{" "}
         <Link
-          href={`/auth/login?redirect=${encodeURIComponent(redirect)}`}
+          href={getPath(
+            `/auth/login?redirect=${encodeURIComponent(redirect)}`,
+          )}
           style={{ color: "var(--accent-gold)" }}
         >
           登录

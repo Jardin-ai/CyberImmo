@@ -3,6 +3,7 @@
 import { INITIAL_QUESTIONNAIRE, type QuestionnaireData } from "@/lib/types";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { getPath } from "@/lib/public-base-path";
 import { useCallback, useEffect, useState } from "react";
 import { submitOnboarding } from "./actions";
 import Step0Consent from "./steps/Step0Consent";
@@ -108,7 +109,7 @@ export default function OnboardingClient({
     <main className="min-h-dvh relative">
       {/* Back button */}
       <Link
-        href={!isGuest || personaId ? "/dashboard" : "/"}
+        href={!isGuest || personaId ? getPath("/dashboard") : getPath("/")}
         className="absolute left-6 top-8 z-30 flex items-center gap-2 text-sm text-foreground/40 transition-colors hover:text-accent select-none"
       >
         <ArrowLeft size={16} />

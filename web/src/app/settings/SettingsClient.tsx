@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { updateProfile, deleteAccount } from "./actions";
 import { Camera, AlertTriangle, Lock, Zap, LogOut } from "lucide-react";
 import Link from "next/link";
+import { getPath } from "@/lib/public-base-path";
 import { useRouter } from "next/navigation";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { User as DbUser } from "@/lib/types";
@@ -103,14 +104,14 @@ export default function SettingsClient({
   /* ── sign out ── */
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push("/auth/login");
+    router.push(getPath("/auth/login"));
     router.refresh();
   };
 
   const handleDelete = async () => {
     setDeleting(true);
     const result = await deleteAccount();
-    if (result.error) { alert(result.error); setDeleting(false); } else { router.push("/auth/login"); }
+    if (result.error) { alert(result.error); setDeleting(false); } else { router.push(getPath("/auth/login")); }
   };
 
   return (
@@ -239,7 +240,7 @@ export default function SettingsClient({
               <span className="text-sm" style={{ color: "var(--text-secondary)" }}>回声</span>
             </div>
           </div>
-          <Link href="/billing?tab=history">
+          <Link href={getPath("/billing?tab=history")}>
             <span
               className="text-sm transition-opacity hover:opacity-70"
               style={{ color: "var(--text-secondary)" }}
@@ -288,7 +289,7 @@ export default function SettingsClient({
                   </p>
                   <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.3)" }}>
                     {locked ? (
-                      <Link href="/billing?tab=recharge" className="underline underline-offset-2 hover:opacity-70" style={{ color: "var(--accent-gold)" }}>
+                      <Link href={getPath("/billing?tab=recharge")} className="underline underline-offset-2 hover:opacity-70" style={{ color: "var(--accent-gold)" }}>
                         升级会员解锁 →
                       </Link>
                     ) : (
