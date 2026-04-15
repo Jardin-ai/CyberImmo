@@ -1,0 +1,61 @@
+"use client";
+
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+
+export type ModelId = "glm-4" | "glm-4-flash";
+
+export const MODEL_CONFIG: Record<
+  ModelId,
+  { label: string; description: string; cost: number; badge?: string }
+> = {
+  "glm-4": {
+    label: "GLM-4",
+    description: "深度推理，情感更丰富",
+    cost: 5,
+  },
+  "glm-4-flash": {
+    label: "GLM-4-Flash",
+    description: "轻量快速，对话流畅",
+    cost: 0,
+    badge: "免费",
+  },
+};
+
+interface ModelContextValue {
+  modelId: ModelId;
+  setModelId: (id: ModelId) => void;
+}
+
+const ModelContext = createContext<ModelContextValue>({
+  modelId: "glm-4",
+  setModelId: () => {},
+});
+
+export function ModelProvider({ children }: { children: ReactNode }) {
+  const [modelId, setModelIdState] = useState<ModelId>("glm-4");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("cyberimmo_model");
+    // Migrate legacy deepseek-chat → glm-4
+    if (saved === "deepseek-chat" || saved === "glm-4") {
+      setModelIdState("glm-4");
+    } else if (saved === "glm-4-flash") {
+      setModelIdState("glm-4-flash");
+    }
+  }, []);
+
+  const setModelId = (id: ModelId) => {
+    setModelIdState(id);
+    localStorage.setItem("cyberimmo_model", id);
+  };
+
+  return (
+    <ModelContext.Provider value={{ modelId, setModelId }}>
+      {children}
+    </ModelContext.Provider>
+  );
+}
+
+export function useModel() {
+  return useContext(ModelContext);
+}

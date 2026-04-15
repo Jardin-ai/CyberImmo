@@ -1,13 +1,25 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const PUBLIC_PATHS = ["/auth", "/_next", "/favicon.ico", "/api/chat"];
+const PUBLIC_PATHS = [
+  "/auth",
+  "/_next",
+  "/favicon.ico",
+  "/api/chat",
+  "/jellyfish.webm",
+  "/onboarding",
+  "/chat/guest",
+];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public paths
-  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p)) || pathname === "/") {
+  if (
+    PUBLIC_PATHS.some((p) => pathname.startsWith(p)) ||
+    pathname === "/" ||
+    pathname.endsWith(".webm")
+  ) {
     return await updateSession(request);
   }
 
@@ -73,6 +85,6 @@ async function updateSession(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|webm|mp4)$).*)",
   ],
 };

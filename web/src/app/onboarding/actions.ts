@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { buildSystemPrompt } from "@/lib/prompt-builder";
 import { FREE_TOKEN_GRANT } from "@/lib/constants";
+import { PRIVACY_AGREEMENT_CONTENT } from "@/lib/privacy-content";
 import type { QuestionnaireData } from "@/lib/types";
 
 export async function submitOnboarding(
@@ -64,12 +65,13 @@ export async function submitOnboarding(
     return { error: "创建角色失败" };
   }
 
-  // 5. Grant free tokens (application-level transaction)
-  // First update balance
+  // 5. Grant 200 welcome echoes (application-level transaction)
+  // Write to both token_balance (legacy) and echo_balance (canonical)
   const { error: balanceError } = await admin
     .from("users")
     .update({
       token_balance: FREE_TOKEN_GRANT,
+      echo_balance: FREE_TOKEN_GRANT,
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
@@ -95,6 +97,91 @@ export async function submitOnboarding(
   }
 
   return { personaId: persona.id };
+}
+
+export async function syncGuestMessages(
+  personaId: string,
+  messages: any[]
+): Promise<{ success?: boolean; error?: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { error: "未登录" };
+
+  const admin = createAdminClient();
+
+  // Filter messages to sync (only user and assistant)
+  const logsToInsert = messages
+    .filter((m) => m.role === "user" || m.role === "assistant")
+    .map((m) => ({
+      persona_id: personaId,
+      user_id: user.id,
+      session_id: personaId,
+      role: m.role,
+      content:
+        m.parts
+          ?.filter((p: any) => p.type === "text")
+          .map((p: any) => p.text)
+          .join("") ??
+        m.content ??
+        "",
+      token_cost: 0,
+      created_at: m.createdAt || new Date().toISOString(),
+    }));
+
+  if (logsToInsert.length === 0) return { success: true };
+
+  const { error: insertError } = await admin.from("chat_logs").insert(logsToInsert);
+
+  if (insertError) {
+    console.error("Failed to sync guest messages:", insertError);
+    return { error: "同步聊天记录失败" };
+  }
+
+  return { success: true };
+}
+
+export async function updateOnboarding(
+  personaId: string,
+  data: QuestionnaireData
+): Promise<{ success?: boolean; error?: string }> {
+  // 1. Get current user
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return { error: "未登录，请先登录" };
+  }
+
+  const admin = createAdminClient();
+
+  // 2. Build system prompt from questionnaire
+  const systemPrompt = buildSystemPrompt(data);
+
+  // 3. Update persona
+  const { error: personaError } = await admin
+    .from("personas")
+    .update({
+      display_name: data.deceasedName,
+      relationship_label: data.relationship,
+      speaking_style: data.speakingStyle || null,
+      opening_message: data.openingMessage || null,
+      system_prompt: systemPrompt,
+      questionnaire_data: data,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", personaId)
+    .eq("user_id", user.id);
+
+  if (personaError) {
+    console.error("Failed to update persona:", personaError);
+    return { error: "更新档案失败" };
+  }
+
+  return { success: true };
 }
 
 export async function agreeAndCheckPrivacyPolicy() {
@@ -124,15 +211,6 @@ export async function agreeAndCheckPrivacyPolicy() {
   return { success: true, hasPersonas };
 }
 
-import fs from "fs";
-import path from "path";
-
 export async function getPrivacyAgreement(): Promise<string> {
-  try {
-    const filePath = path.join(process.cwd(), "../docs/CyberImmo用户服务与数据隐私协议.md");
-    return fs.readFileSync(filePath, "utf-8");
-  } catch (error) {
-    console.error("Failed to read privacy agreement:", error);
-    return "Error: 无法加载服务与隐私协议，请稍后再试。";
-  }
+  return PRIVACY_AGREEMENT_CONTENT;
 }

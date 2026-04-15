@@ -7,10 +7,28 @@ export interface User {
   email: string | null;
   phone: string | null;
   status: "active" | "suspended" | "churned";
-  token_balance: number;
+  token_balance: number;       // legacy — migrated to echo_balance
+  echo_balance: number;
+  subscription_tier: string;   // FREE | MONTHLY_BASIC | MONTHLY_PRO | ANNUAL_BASIC | 5YEAR_ULTRA
+  subscription_expires_at: string | null;
+  daily_free_text_used: number;
+  last_checkin_date: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
   created_at: string;
   updated_at: string;
 }
+
+export const SUBSCRIPTION_TIERS: Record<
+  string,
+  { label: string; price: string; echoes: number; color: string }
+> = {
+  FREE:           { label: "寄托体验",    price: "免费",     echoes: 0,     color: "#6B7280" },
+  MONTHLY_BASIC:  { label: "灵犀通讯",    price: "¥29.9/月", echoes: 6000,  color: "#3B82F6" },
+  MONTHLY_PRO:    { label: "深度共鸣",    price: "¥49.9/月", echoes: 15000, color: "#8B5CF6" },
+  ANNUAL_BASIC:   { label: "岁月长卷",    price: "¥268/年",  echoes: 8000,  color: "#D4AF37" },
+  "5YEAR_ULTRA":  { label: "时空契约",    price: "¥999/5年", echoes: 20000, color: "#EC4899" },
+};
 
 export interface Persona {
   id: string;
@@ -20,7 +38,7 @@ export interface Persona {
   speaking_style: string | null;
   opening_message: string | null;
   system_prompt: string;
-  questionnaire_data: QuestionnaireData | null;
+  questionnaire_data: QuestionnaireData;
   language: string;
   status: "draft" | "active" | "archived";
   created_at: string;
@@ -57,22 +75,19 @@ export interface QuestionnaireData {
   // Step 1 — Basic info
   deceasedName: string;
   relationship: string;
+  avatarUrl?: string;
 
   // Step 2 — Personality & speaking style
   personalityTraits: string[];
   speakingStyle: string;
   catchphrases: string;
-  dialect: string;
 
   // Step 3 — Shared memories
   fondMemory: string;
-  dailyHabit: string;
-  sharedActivity: string;
 
   // Step 4 — Comfort boundaries
-  avoidTopics: string;
-  comfortStyle: string[];
   honorific: string;
+  comfortStyle: string[];
 
   // Step 5 — Opening
   openingMessage: string;
@@ -82,16 +97,13 @@ export interface QuestionnaireData {
 export const INITIAL_QUESTIONNAIRE: QuestionnaireData = {
   deceasedName: "",
   relationship: "",
+  avatarUrl: "",
   personalityTraits: [],
   speakingStyle: "",
   catchphrases: "",
-  dialect: "",
   fondMemory: "",
-  dailyHabit: "",
-  sharedActivity: "",
-  avoidTopics: "",
-  comfortStyle: [],
   honorific: "",
+  comfortStyle: [],
   openingMessage: "",
   aiFirstMessage: "",
 };
@@ -103,7 +115,7 @@ export const INITIAL_QUESTIONNAIRE: QuestionnaireData = {
 export const RELATIONSHIP_OPTIONS = [
   "父亲", "母亲", "爷爷", "奶奶", "外公", "外婆",
   "丈夫", "妻子", "儿子", "女儿",
-  "兄弟", "姐妹", "朋友", "恋人", "其他",
+  "兄弟", "姐妹", "朋友", "恋人", "宠物", "战友", "其他",
 ] as const;
 
 export const PERSONALITY_OPTIONS = [

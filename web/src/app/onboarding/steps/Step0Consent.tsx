@@ -7,9 +7,10 @@ import { getPrivacyAgreement, agreeAndCheckPrivacyPolicy } from "../actions";
 
 interface Props {
   onNext: () => void;
+  isGuest?: boolean;
 }
 
-export default function Step0Consent({ onNext }: Props) {
+export default function Step0Consent({ onNext, isGuest = false }: Props) {
   const [content, setContent] = useState<string>("");
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -75,8 +76,13 @@ export default function Step0Consent({ onNext }: Props) {
         </label>
 
         <div className="flex justify-end pt-2">
-          <Button 
+          <Button
             onClick={async () => {
+              if (isGuest) {
+                // Guest: skip server action, go directly to next step
+                onNext();
+                return;
+              }
               setSubmitting(true);
               const { success, hasPersonas } = await agreeAndCheckPrivacyPolicy();
               if (success) {
@@ -89,8 +95,8 @@ export default function Step0Consent({ onNext }: Props) {
                 setSubmitting(false);
                 alert("发生错误，请稍后重试");
               }
-            }} 
-            disabled={!agreed || submitting} 
+            }}
+            disabled={!agreed || submitting}
             className="min-w-[120px]"
           >
             {submitting ? "请稍候..." : "同意并继续"}

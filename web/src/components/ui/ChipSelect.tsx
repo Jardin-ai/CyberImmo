@@ -2,6 +2,7 @@
 
 interface ChipSelectProps {
   label?: string;
+  hint?: string;
   options: readonly string[];
   value: string | string[];
   onChange: (value: string | string[]) => void;
@@ -10,6 +11,7 @@ interface ChipSelectProps {
 
 export default function ChipSelect({
   label,
+  hint,
   options,
   value,
   onChange,
@@ -31,8 +33,13 @@ export default function ChipSelect({
   return (
     <div className="space-y-2">
       {label && (
-        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-          {label}
+        <p className="items-center flex justify-between text-sm" style={{ color: "var(--text-secondary)" }}>
+          <span>{label}</span>
+          {hint && (
+            <span className="text-xs opacity-50 font-normal">
+              {hint}
+            </span>
+          )}
         </p>
       )}
       <div className="flex flex-wrap gap-2">

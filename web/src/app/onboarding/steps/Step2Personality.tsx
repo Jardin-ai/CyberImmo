@@ -15,9 +15,18 @@ interface Props {
   onChange: (patch: Partial<QuestionnaireData>) => void;
   onPrev: () => void;
   onNext: () => void;
+  onFastTrack?: () => void;
+  loading?: boolean;
 }
 
-export default function Step2Personality({ data, onChange, onPrev, onNext }: Props) {
+export default function Step2Personality({ 
+  data, 
+  onChange, 
+  onPrev, 
+  onNext,
+  onFastTrack,
+  loading = false
+}: Props) {
   const canProceed =
     data.personalityTraits.length > 0 && data.speakingStyle.trim() !== "";
 
@@ -28,7 +37,9 @@ export default function Step2Personality({ data, onChange, onPrev, onNext }: Pro
       subtitle="帮助我们了解TA是什么样的人"
       onPrev={onPrev}
       onNext={onNext}
+      onFastTrack={onFastTrack}
       nextDisabled={!canProceed}
+      loading={loading}
     >
       <ChipSelect
         label="TA是什么样的人？（可多选）"
@@ -46,21 +57,13 @@ export default function Step2Personality({ data, onChange, onPrev, onNext }: Pro
       />
 
       <TextArea
-        label="TA常说的口头禅或句子"
+        label="有什么口头禅或特定称呼？"
         hint="选填，帮助还原TA的说话方式"
         id="catchphrases"
         placeholder="比如：'慢慢来，不着急'、'吃饭了没'..."
         value={data.catchphrases}
         onChange={(e) => onChange({ catchphrases: e.target.value })}
         maxLength={300}
-      />
-
-      <Input
-        label="TA有方言或语言习惯吗？"
-        id="dialect"
-        placeholder="选填，比如：四川话、东北腔..."
-        value={data.dialect}
-        onChange={(e) => onChange({ dialect: e.target.value })}
       />
     </StepShell>
   );

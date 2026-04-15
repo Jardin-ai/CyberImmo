@@ -13,6 +13,7 @@ interface StepShellProps {
   onNext?: () => void;
   nextLabel?: string;
   nextDisabled?: boolean;
+  onFastTrack?: () => void;
   loading?: boolean;
 }
 
@@ -25,6 +26,7 @@ export default function StepShell({
   onNext,
   nextLabel = "下一步",
   nextDisabled = false,
+  onFastTrack,
   loading = false,
 }: StepShellProps) {
   return (
@@ -44,20 +46,32 @@ export default function StepShell({
 
       <div className="flex-1 space-y-6">{children}</div>
 
-      <div className="mt-8 flex gap-3">
-        {onPrev && (
-          <Button variant="secondary" onClick={onPrev} className="flex-1">
-            上一步
-          </Button>
-        )}
-        {onNext && (
+      <div className="mt-8 flex flex-col gap-3">
+        <div className="flex gap-3">
+          {onPrev && (
+            <Button variant="secondary" onClick={onPrev} className="flex-1">
+              上一步
+            </Button>
+          )}
+          {onNext && (
+            <Button
+              variant="primary"
+              onClick={onNext}
+              disabled={nextDisabled || loading}
+              className="flex-1"
+            >
+              {loading ? "提交中..." : nextLabel}
+            </Button>
+          )}
+        </div>
+        {onFastTrack && (
           <Button
-            variant="primary"
-            onClick={onNext}
+            variant="ghost"
+            onClick={onFastTrack}
             disabled={nextDisabled || loading}
-            className="flex-1"
+            className="w-full text-accent hover:bg-accent/10 border border-accent/20"
           >
-            {loading ? "提交中..." : nextLabel}
+            {loading ? "提交中..." : "跳过后续，立即开启连接"}
           </Button>
         )}
       </div>

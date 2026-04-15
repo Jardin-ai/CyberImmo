@@ -1,35 +1,38 @@
 @import "tailwindcss";
 
 /* ============================================================
-   CyberImmo Design System — plan.md §9.3
+   CyberImmo Design System — Refined Palette v2
    ============================================================ */
 :root {
-  /* Background */
-  --bg-base: #181A1F;
-  --bg-glow: #8C5032;
+  /* Background layers */
+  --bg-base: #0D0E12;
+  --bg-glow: #6B3A20;
 
   /* Text */
-  --text-primary: #E8EAED;
-  --text-secondary: #9AA0A6;
+  --text-primary: #E2E8F0;
+  --text-secondary: #94A3B8;
 
   /* Accent */
-  --accent-gold: #D4AF37;
-  --accent-gold-soft: #E5C07B;
+  --accent-gold: #D4A017;
+  --accent-gold-soft: #C8943A;
 
   /* Chat bubbles */
-  --bubble-ai: #282A30;
-  --bubble-user: #3A3D42;
-  --bubble-user-alt: #373F4A;
+  --bubble-ai: #181A1F;
+  --bubble-user: #1E2028;
+  --bubble-user-alt: #1E2028;
 
   /* Input */
-  --input-bg: rgba(40, 42, 48, 0.6);
-  --input-border: rgba(255, 255, 255, 0.08);
-  --disabled-icon: #5F6368;
+  --input-bg: rgba(24, 26, 31, 0.7);
+  --input-border: rgba(255, 255, 255, 0.07);
+  --disabled-icon: #4A5568;
 
   /* Surfaces */
-  --surface: #1E2028;
-  --surface-hover: #252830;
-  --surface-border: rgba(255, 255, 255, 0.06);
+  --surface: #181A1F;
+  --surface-hover: #1E2028;
+  --surface-border: rgba(255, 255, 255, 0.05);
+
+  /* Border */
+  --border: #2D3139;
 }
 
 @theme inline {
@@ -41,6 +44,7 @@
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
   --color-surface-border: var(--surface-border);
+  --color-border: var(--border);
   --color-input-bg: var(--input-bg);
   --color-input-border: var(--input-border);
   --font-sans: var(--font-geist-sans);
@@ -52,17 +56,19 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
   min-height: 100dvh;
+  user-select: none;
+  cursor: default;
 }
 
-/* Ambient glow — warm light from upper-left */
+/* Ambient glow — subtle warmth from upper-left */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background: radial-gradient(
-    ellipse 80% 60% at 10% 10%,
-    rgba(140, 80, 50, 0.18),
-    transparent 70%
+    ellipse 70% 50% at 5% 5%,
+    rgba(107, 58, 32, 0.14),
+    transparent 65%
   );
   pointer-events: none;
   z-index: 0;
@@ -76,7 +82,7 @@ body > * {
 
 /* Gold breathing animation for latest AI message */
 @keyframes breathingGlow {
-  0%   { box-shadow: 0 0 10px 0 rgba(212, 175, 55, 0.15); }
-  50%  { box-shadow: 0 0 25px 4px rgba(212, 175, 55, 0.5); }
-  100% { box-shadow: 0 0 10px 0 rgba(212, 175, 55, 0.15); }
+  0%   { box-shadow: 0 0 8px 0 rgba(212, 160, 23, 0.12); }
+  50%  { box-shadow: 0 0 20px 3px rgba(212, 160, 23, 0.4); }
+  100% { box-shadow: 0 0 8px 0 rgba(212, 160, 23, 0.12); }
 }

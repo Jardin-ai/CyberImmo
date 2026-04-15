@@ -1,14 +1,41 @@
-export default function BillingPage() {
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { createClient } from "@/lib/supabase/server";
+import BillingClient from "./BillingClient";
+
+export default async function BillingPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  // Fetch user subscription info
+  const { data: userProfile } = await supabase
+    .from("users")
+    .select("echo_balance, subscription_tier, subscription_expires_at")
+    .eq("id", user.id)
+    .single();
+
+  // Fetch billing history (latest 50 entries)
+  const { data: transactions } = await supabase
+    .from("billing_tokens")
+    .select("id, delta, balance_after, event_type, source_ref, created_at")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(50);
+
   return (
-    <div className="flex min-h-dvh items-center justify-center px-4">
-      <div className="text-center space-y-4">
-        <h1 className="text-xl font-bold" style={{ color: "var(--accent-gold)" }}>
-          账户与充值
-        </h1>
-        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-          额度管理功能将在 D5 实��
-        </p>
-      </div>
-    </div>
+    <Suspense>
+      <BillingClient
+        echoBalance={userProfile?.echo_balance ?? 0}
+        subscriptionTier={userProfile?.subscription_tier ?? "FREE"}
+        subscriptionExpiresAt={userProfile?.subscription_expires_at ?? null}
+        transactions={transactions ?? []}
+      />
+    </Suspense>
   );
 }

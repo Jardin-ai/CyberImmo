@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -28,23 +28,50 @@ function LoginForm() {
       setError(
         error.message === "Invalid login credentials"
           ? "邮箱或密码错误"
-          : error.message
+          : error.message,
       );
       setLoading(false);
       return;
     }
 
-    window.location.href = redirect;
+    let target = redirect;
+
+    // Smart redirect: If the user is supposed to go to onboarding, but they already 
+    // have personas, redirect them to the dashboard instead.
+    if (target === "/onboarding") {
+      const { data: userResponse } = await supabase.auth.getUser();
+      const userId = userResponse.user?.id;
+      
+      if (userId) {
+        const { count } = await supabase
+          .from("personas")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", userId)
+          .eq("status", "active");
+
+        if (count && count > 0) {
+          target = "/dashboard";
+        }
+      }
+    }
+
+    window.location.href = target;
   }
 
   return (
     <div className="w-full max-w-sm space-y-8">
       <div className="text-center">
-        <h1 className="text-2xl font-bold" style={{ color: "var(--accent-gold)" }}>
-          CyberImmo
+        <h1
+          className="text-2xl font-bold"
+          style={{ color: "var(--accent-gold)" }}
+        >
+          CyberImmo 数字永生
         </h1>
-        <p className="mt-2" style={{ color: "var(--text-secondary)" }}>
-          登录以继续
+        <p
+          className="mt-2 text-right text-sm italic opacity-80"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          “ —— 将散落的数据碎片，重构为永恒的思念 ”
         </p>
       </div>
 
@@ -113,7 +140,10 @@ function LoginForm() {
         </button>
       </form>
 
-      <p className="text-center text-sm" style={{ color: "var(--text-secondary)" }}>
+      <p
+        className="text-center text-sm"
+        style={{ color: "var(--text-secondary)" }}
+      >
         还没有账号？{" "}
         <Link
           href={`/auth/register?redirect=${encodeURIComponent(redirect)}`}

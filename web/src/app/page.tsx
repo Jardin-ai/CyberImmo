@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import HeroSection from "@/components/HeroSection";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -8,7 +9,7 @@ export default async function HomePage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth/login");
+    return <HeroSection />;
   }
 
   if (!user.user_metadata?.privacy_agreed) {

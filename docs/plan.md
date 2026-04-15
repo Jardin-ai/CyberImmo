@@ -24,7 +24,12 @@ MVP 只解决四件事：
 - **记忆策略 MVP**：仅 `Sliding Window`（最近约 `20` 条消息装入 prompt）；更早消息仍完整保留在 `ChatLogs`，仅为省 Token 不送入模型。`// TODO: Phase 2 - summary compaction`。
 - **安全策略 MVP**：`system_prompt` 写死安全与角色边界 + 轻量 **关键词级** `prompt injection` 拦截；不做独立安全扫描流水线、不做 `safety_flags` / `prompt_injection_score` 等细粒度字段。
 - 包管理：使用 **Bun** 替代 npm/yarn（与仓库脚手架一致）。
+- **技术版本更新 (2026-04-08)**：
+  - **Framework**: `Next.js 16.2.2` (App Router)
+  - **AI SDK**: `Vercel AI SDK V6` (协议全面转向 `parts` 结构)
+  - **React**: `React 19` (利用其高性能与最新 Hooks)
 - 容器：生产用 `Docker`；为贴近 Free Tier 内存上限，**MVP 推荐单容器** `Next.js standalone`（见 §3），避免 `nginx + web + api` 三容器叠加 OOM。
+- **视觉约束变更**：放弃图片输入支持，聊天界面维持极致纯净的文本流，聚焦情感价值。
 
 ## 3. 单机部署蓝图（修订版）
 
@@ -404,6 +409,16 @@ flowchart LR
 - 胶囊输入框
 - 发送按钮
 - 基础加载态与空状态
+- **响应式侧边栏 (MainSidebar)**:
+  - **背景**: `#1F2229` (层级感区分)
+  - **边框**: 右侧 `1px` 线条 `#2D3139`
+  - **UserSection**: 聚合头像、昵称，点击直达 `/settings`。
+  - **ModelSelector**: 全局模型切换状态 (Zustand/Context + localStorage)，支持：
+    - **DeepSeek-V3**: 消耗 5 回声/轮。
+    - **GLM-4.7-Flash**: 免费 (0 回声)，适合快速、基础对话体验。
+  - **EchoStats (资产预览)**: 实时展示“回声余额”，订阅 Supabase Realtime 变更。
+  - **DataActions**: 对话导出与隐私盾快捷键。
+  - **动效**: 使用 `framer-motion` 实现平滑的展开/折叠过渡。
 
 先不做复杂功能：
 

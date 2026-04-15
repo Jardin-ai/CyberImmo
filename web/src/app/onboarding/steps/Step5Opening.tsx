@@ -30,8 +30,8 @@ export default function Step5Opening({
       loading={loading}
     >
       <TextArea
-        label="您最想对TA说的第一句话是什么？"
-        hint="选填，留空也没关系"
+        label="您最想对TA说的第一句话？"
+        hint="选填，留空则由系统主动打招呼"
         id="openingMessage"
         placeholder="想说什么都可以..."
         value={data.openingMessage}
@@ -40,8 +40,8 @@ export default function Step5Opening({
       />
 
       <TextArea
-        label="您希望TA对您说的第一句话是什么？"
-        hint="选填，留空则由系统根据TA的性格自动生成"
+        label="您希望TA如何回应？(AI开场)"
+        hint="选填，也可留空让系统自动生成"
         id="aiFirstMessage"
         placeholder="比如：'好久不见，你最近还好吗？'"
         value={data.aiFirstMessage}
