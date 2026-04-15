@@ -335,3 +335,12 @@ All done. Here's a summary of everything completed:
 - **Execution**: package.json uild:cf 改为 
 px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 open-next.config（proxyExternalRequest + middleware override）；ChatClient/guest/HeroSection/model-context/dashboard/onboarding 等修 lint；web/.gitignore 忽略 .open-next/。
 - **Debt & Opt**: 升级 Next 至 >=16.2.3 或评估 OpenNext 新版本前需再测 Proxy；lint 仍有 img 等 warning。
+
+### [2026-04-15 00:00:00] [Claude Code]
+
+- **Action**: 修复 Cloudflare 构建报错 `ERR_MODULE_NOT_FOUND: Cannot find package 'cloudflare'`
+  - `web/package.json`: 将 `cloudflare@^4.5.0` 添加至 `devDependencies`（原仅作为 `wrangler` 的传递依赖存在，CI 环境 ESM 解析失败）；同时将 `build:cf` 脚本中的 `npx` 改为 `bun x`
+- **Opinion/Decision**:
+  - `@opennextjs/cloudflare@1.5.0` 内部导入 `cloudflare` SDK，但未在 `peerDependencies` 中声明，属于上游 bug；最小修复是将其提升为项目直接依赖。
+- **Handoff**:
+  - 无遗留债务，下次 `bun run build:cf` 应正常通过。
