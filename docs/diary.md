@@ -348,3 +348,12 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Trigger**: GitHub Action cloudflare/wrangler-action@v3 失败，日志显示 /home/runner/.bun/bin/bunx exit 1。
 - **Execution**: [.github/workflows/deploy.yml](.github/workflows/deploy.yml) 为 deploy 步骤增加 `packageManager: npm`、`wranglerVersion: "4"`，避免根据 bun.lock 推断用 bunx 调 wrangler。
 - **Debt & Opt**: 若仍失败，检查 wrangler.toml 中 KV id 是否仍为占位符；需真实 ID 或临时注释 [[kv_namespaces]] 再试。
+
+### [2026-04-15 00:05:00] [Claude Code]
+
+- **Action**: 修复 CI deploy 步骤报错 `The process '/usr/local/bin/npx' failed with exit code 1`
+  - `.github/workflows/deploy.yml`: 移除 `cloudflare/wrangler-action@v3`（内部走 npx，Node 20 下失败），改为 `bun x wrangler pages deploy` 直接调用已安装的 wrangler；通过环境变量传入 token/accountId
+- **Opinion/Decision**:
+  - wrangler 已是 devDependency，无需第三方 action 再安装一遍；直接 bunx 调用更简洁且不受 Node 版本 deprecation 影响。
+- **Handoff**:
+  - 无遗留债务。
