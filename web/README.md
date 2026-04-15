@@ -29,6 +29,11 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Deploy（CyberImmo / Cloudflare）
+
+- 子路径 `basePath`、静态导出与主站合并部署见：[docs/cloudflare-github-actions.md](../docs/cloudflare-github-actions.md)。
+- 静态 `out` 预览：`NEXT_STATIC_EXPORT=1 bun run build` 通过后执行 `bun run preview:static`。
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.

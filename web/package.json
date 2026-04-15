@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "build:cf": "next build && bunx @opennextjs/cloudflare",
-    "preview:cf": "wrangler pages dev"
+    "preview:cf": "wrangler pages dev",
+    "preview:static": "npx --yes serve@14 out -p 3000"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.52",
