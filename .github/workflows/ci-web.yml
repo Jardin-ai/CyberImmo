@@ -1,6 +1,9 @@
 # CyberImmo Next应用：PR / push 时校验（默认构建，不含 static export）
 name: CI web
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
     branches: [main]
@@ -21,6 +24,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
 
       - uses: oven-sh/setup-bun@v2
         with:

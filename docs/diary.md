@@ -357,3 +357,15 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
   - wrangler 已是 devDependency，无需第三方 action 再安装一遍；直接 bunx 调用更简洁且不受 Node 版本 deprecation 影响。
 - **Handoff**:
   - 无遗留债务。
+
+### [2026-04-08 12:30:00] [Cursor]
+
+- **Trigger**: Wrangler Pages 8000007 项目不存在；Actions 弃用 Node 20，需迁到 Node 24。
+- **Execution**: `.github/workflows/deploy.yml` 与 `ci-web.yml` 增加工作流级 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`，`actions/setup-node@v4`（node-version `"24"`）；deploy 中 `--project-name` 使用 `vars.CLOUDFLARE_PAGES_PROJECT` 非空则用之，否则默认 `cyberimmo`。
+- **Debt & Opt**: 在 Cloudflare 创建与名称一致的 Pages 项目，或设置仓库变量 `CLOUDFLARE_PAGES_PROJECT`；核对 `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 与账号权限。
+
+### [2026-04-08 12:30:00] [Cursor]
+
+- **Trigger**: Wrangler Pages 8000007 项目不存在；Actions 弃用 Node 20，需迁到 Node 24。
+- **Execution**: `.github/workflows/deploy.yml` 与 `ci-web.yml` 增加工作流级 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`，`actions/setup-node@v4`（node-version `"24"`）；deploy 中 `--project-name` 使用 `vars.CLOUDFLARE_PAGES_PROJECT` 非空则用之，否则默认 `cyberimmo`。
+- **Debt & Opt**: 在 Cloudflare 创建与名称一致的 Pages 项目，或设置仓库变量 `CLOUDFLARE_PAGES_PROJECT`；核对 `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 与账号权限。
