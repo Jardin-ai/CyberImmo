@@ -38,7 +38,7 @@ jobs:
 
       # Pages 项目名须与 Cloudflare 控制台中的项目 slug 一致；可在 Repo → Settings → Variables 设置 CLOUDFLARE_PAGES_PROJECT 覆盖默认值 cyberimmo。
       - name: Deploy to Cloudflare Pages
-        run: bun x wrangler pages deploy .open-next/assets --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT != '' && vars.CLOUDFLARE_PAGES_PROJECT || 'CyberImmo' }} --commit-dirty=true
+        run: bun x wrangler pages deploy .open-next/assets --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT != '' && vars.CLOUDFLARE_PAGES_PROJECT || 'cyberimmo' }} --commit-dirty=true
         working-directory: web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
