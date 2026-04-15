@@ -411,3 +411,9 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Trigger**: `wrangler deploy` API 100328，免费计划不支持 CPU limits。
 - **Execution**: `web/wrangler.toml` 移除 `[limits] cpu_ms`，改为注释说明仅付费可开；`docs/cloudflare-github-actions.md` 增加排错条。
 - **Debt & Opt**: None
+
+### [2026-04-15 16:45:00] [Cursor]
+
+- **Trigger**: `wrangler deploy` 10021，`middleware/handler.mjs` 中 `createRequire` 收到 `undefined`（Next 16 `proxy.ts` + OpenNext 1.5）。
+- **Execution**: 删除 `web/src/proxy.ts`，新增等价 `web/src/middleware.ts`（导出 `middleware`）；`docs/cloudflare-github-actions.md` 增加10021 排错说明。
+- **Debt & Opt**: 升级 `@opennextjs/cloudflare` 后可再改回 `proxy.ts` 并跟进官方 Next 16 支持。

@@ -12,10 +12,10 @@ const PUBLIC_PATHS = [
   "/chat/guest",
 ];
 
-export async function proxy(request: NextRequest) {
+/** OpenNext 1.5 + Cloudflare 尚不能稳定打包 `proxy.ts`，暂用 `middleware` 约定（Next 16 会提示弃用，可忽略至升级 @opennextjs/cloudflare）。 */
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public paths
   if (
     PUBLIC_PATHS.some((p) => pathname.startsWith(p)) ||
     pathname === "/" ||
@@ -24,7 +24,6 @@ export async function proxy(request: NextRequest) {
     return await updateSession(request);
   }
 
-  // Protected routes: /onboarding, /chat/*, /billing
   const response = await updateSession(request);
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -78,7 +77,6 @@ async function updateSession(request: NextRequest) {
     }
   );
 
-  // Refresh session if expired
   await supabase.auth.getUser();
 
   return response;
