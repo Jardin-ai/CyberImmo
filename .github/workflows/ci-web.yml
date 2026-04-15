@@ -51,6 +51,6 @@ jobs:
           elif [ -n "$RAW_BASE" ]; then
             export NEXT_PUBLIC_BASE_PATH="$RAW_BASE"
           else
-            export NEXT_PUBLIC_BASE_PATH="/cyberimmo"
+            export NEXT_PUBLIC_BASE_PATH="/CyberImmo"
           fi
           bun run build

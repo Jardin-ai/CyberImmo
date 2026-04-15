@@ -1,6 +1,6 @@
 /**
  * 与 `next.config.ts` 同源：由 `NEXT_PUBLIC_BASE_PATH`（无尾斜杠）驱动。
- * - 子目录：设 `/cyberimmo`；独立根域名：留空或不设置。
+ * - 子目录：设 `/CyberImmo`；独立根域名：留空或不设置。
  *
  * 注意：`next.config` 中的 `basePath` 会让 `Link`、`router.push`/`replace`、`redirect()`
  * 自动加上前缀。若在此处再把 base 拼进 href，会导致双重前缀。

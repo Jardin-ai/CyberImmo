@@ -6,8 +6,8 @@ if (process.env.NODE_ENV === "development") {
 }
 
 /**
- * 子路径部署（主站 akifukaku.com + /cyberimmo）：
- *   CI / 本地构建前设置 NEXT_PUBLIC_BASE_PATH=/cyberimmo（不要尾斜杠）
+ * 子路径部署（主站 akifukaku.com + /CyberImmo）：
+ *   CI / 本地构建前设置 NEXT_PUBLIC_BASE_PATH=/CyberImmo（不要尾斜杠）
  * 独立根域名（cyberimmo.xyz）：
  *   不设该变量或设为空字符串
  *

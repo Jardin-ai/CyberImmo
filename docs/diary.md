@@ -423,3 +423,9 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Trigger**: 线上1101 Worker threw exception。
 - **Execution**: `deploy.yml` 构建步写 `base_path` 至 `GITHUB_OUTPUT`；`wrangler deploy` 增加 `--keep-vars` 与 `--var` 注入 `NEXT_PUBLIC_SUPABASE_*`、`NEXT_PUBLIC_BASE_PATH`；默认子路径修正为 `/cyberimmo`（原误 `/CyberImmo`）；文档增加 1101 排错。
 - **Debt & Opt**: 非 NEXT_PUBLIC 的服务端密钥仍需在控制台或 `wrangler secret` 配置。
+
+### [2026-04-15 19:00:00] [Cursor]
+
+- **Trigger**: 用户请求将本地改动 push；此前 diary 追加命令误用路径，在仓库下生成了嵌套的 `e…/project/...` 目录。
+- **Execution**: 删除误创建目录；`git add` 后提交并 `git push`：`web/wrangler.toml` 的 `[observability.logs]`/`[observability.traces]`、`docs/cloudflare-github-actions.md` Worker 变量表，以及工作区中已修改的 `ci-web.yml`、`next.config.ts`、`public-base-path.ts`。
+- **Debt & Opt**: 在 Windows 上向 `docs/diary.md` 追加内容时用仓库相对路径或 PowerShell，避免 `e:/...` 在 bash 中被解析异常。

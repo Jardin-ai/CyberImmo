@@ -5,6 +5,15 @@ main = ".open-next/worker.js"
 compatibility_date = "2025-09-01"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
+# 与控制台 Observability 一致；仅用顶层 [observability].enabled 时，部分 wrangler 版本仍会把 logs 标为 false
+[observability.logs]
+enabled = true
+
+# 按需开启：看单次请求内外部 fetch / 绑定耗时（免费档有每日事件配额，高流量可调低 head_sampling_rate）
+[observability.traces]
+enabled = true
+head_sampling_rate = 1
+
 [assets]
 directory = ".open-next/assets"
 binding = "ASSETS"
