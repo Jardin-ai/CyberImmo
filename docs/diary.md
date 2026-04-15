@@ -429,3 +429,9 @@ px opennextjs-cloudflare build；锁定 @opennextjs/cloudflare@1.5.0；补全 op
 - **Trigger**: 用户请求将本地改动 push；此前 diary 追加命令误用路径，在仓库下生成了嵌套的 `e…/project/...` 目录。
 - **Execution**: 删除误创建目录；`git add` 后提交并 `git push`：`web/wrangler.toml` 的 `[observability.logs]`/`[observability.traces]`、`docs/cloudflare-github-actions.md` Worker 变量表，以及工作区中已修改的 `ci-web.yml`、`next.config.ts`、`public-base-path.ts`。
 - **Debt & Opt**: 在 Windows 上向 `docs/diary.md` 追加内容时用仓库相对路径或 PowerShell，避免 `e:/...` 在 bash 中被解析异常。
+
+### [2026-04-15 19:30:00] [Cursor]
+
+- **Trigger**: 用户问是否与 Dashboard 导出的 observability（persist、invocation_logs、顶层 enabled）一致。
+- **Execution**: `web/wrangler.toml` 补全为与 JSONC 等价的 TOML；`npx wrangler deploy --dry-run` 通过。
+- **Debt & Opt**: 若线上行为与顶层 `enabled = false` 预期不符，可改为 `enabled = true` 并对照官方 Observability 文档。

@@ -5,13 +5,21 @@ main = ".open-next/worker.js"
 compatibility_date = "2025-09-01"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
-# 与控制台 Observability 一致；仅用顶层 [observability].enabled 时，部分 wrangler 版本仍会把 logs 标为 false
+# 与 Dashboard「Observability」导出一致，避免 deploy 覆盖控制台上的 persist / invocation_logs
+# 顶层 enabled：控制台 JSON可能为 false（与子项 logs/traces 并存）；Wrangler 4.81+ 以子表为准
+[observability]
+enabled = false
+head_sampling_rate = 1
+
 [observability.logs]
 enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
 
-# 按需开启：看单次请求内外部 fetch / 绑定耗时（免费档有每日事件配额，高流量可调低 head_sampling_rate）
 [observability.traces]
 enabled = true
+persist = true
 head_sampling_rate = 1
 
 [assets]
